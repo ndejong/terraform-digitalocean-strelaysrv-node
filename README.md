@@ -24,6 +24,10 @@ By default the -pools switch is enabled with `https://relays.syncthing.net/endpo
 node to automatically join the public pool - in the same way as with the Syncthing Relay Server this
 is easily overridden by setting `strelaysrv_pools` to a blank value.
 
+NB: the required install cycles can take a few minutes to complete, do a `tail -f /var/log/cloud-init-output.log` 
+to watch the progress - you will recognise when everything is complete by the ascii-art hostname when ssh'ing 
+into the host.
+
 
 ## Input Variables - Required
 
