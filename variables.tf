@@ -23,7 +23,8 @@ variable "user_sshkey" {
 
 variable "image" {
   description = "The digitalocean image to use as the base for this strelaysrv-node."
-  default = "ubuntu-16-04-x64"
+  # default = "ubuntu-16-04-x64"  # NB: by default 16.04 does not have the syncthing-relaysrv package available
+  default = "ubuntu-17-10-x64"
 }
 
 variable "size" {
