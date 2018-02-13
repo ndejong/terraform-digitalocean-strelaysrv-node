@@ -11,9 +11,8 @@ Establishing a Syncthing Relay Server node on Digital Ocean can be made incredib
 this Terraform module as shown in the minimal example below:-
 
 ```hcl
-module "node0-sfo2-digitalocean" {
-  source = "../../modules/terraform-digitalocean-strelaysrv-node"
-  size = "512mb"
+module "strelaysrv-node" {
+  source  = "ndejong/strelaysrv-node/digitalocean"
   region = "sfo2"
   hostname = "node0-sfo2-digitalocean"
   user = "<username>"
@@ -45,7 +44,7 @@ The sshkey to apply to the initial user account - password based auth is always 
 
 ### image
 The digitalocean image to use as the base for this strelaysrv-node.
- - Default: "ubuntu-16-04-x64"
+ - Default: "ubuntu-17-10-x64"
 
 ### size
 The digitalocean droplet size to use for this strelaysrv-node.
