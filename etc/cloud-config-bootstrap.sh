@@ -83,7 +83,6 @@ echo '${hostname}' | head -c 10 | figlet > /etc/motd
 echo '' >> /etc/motd
 
 # strelaysrv info
-
 cat > /etc/update-motd.d/99-strelaysrv << EOF
 #!/bin/sh
 /bin/journalctl -xe | /bin/grep 'relay://' | /usr/bin/tail -n1 | /usr/bin/tr ' ' '\n' | /bin/grep 'relay://'
