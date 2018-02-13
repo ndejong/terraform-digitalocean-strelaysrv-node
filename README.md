@@ -1,6 +1,6 @@
 # Terraform + Digital Ocean + Syncthing Relay Server
 
-Terraform module to create a Syncthing Relay Server, optionally with pre-existing key material.
+Terraform module to create a Syncthing Relay Server on Digital Ocean.
  * [syncthing](https://syncthing.net)
  * [strelaysrv](https://docs.syncthing.net/users/strelaysrv.html)
  * [digital ocean](https://www.digitalocean.com/)
@@ -20,6 +20,9 @@ module "node0-sfo2-digitalocean" {
 }
 ```
 
+By default the -pools switch is enabled with `https://relays.syncthing.net/endpoint` hence causing the 
+node to automatically join the public pool - in the same way as with the Syncthing Relay Server this
+is easily overridden by setting `strelaysrv_pools` to a blank value.
 
 ## Authors
 Module managed by [Nicholas de Jong](https://github.com/ndejong).
