@@ -1,0 +1,9 @@
+_dev/
+.idea/
+
+# Compiled files
+*.tfstate
+*.tfstate.backup
+
+# Module directory
+.terraform/
