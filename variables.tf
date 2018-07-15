@@ -1,3 +1,11 @@
+# terraform-digitalocean-strelaysrv-node
+# ============================================================================
+
+# Copyright (c) 2018 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
+#  - All rights reserved.
+#
+# Apache License v2.0
+#  - http://www.apache.org/licenses/LICENSE-2.0
 
 # required variables - no defaults
 # ============================================================================
@@ -23,15 +31,14 @@ variable "user_sshkey" {
 
 variable "image" {
   description = "The digitalocean image to use as the base for this strelaysrv-node."
-  # default = "ubuntu-16-04-x64"  # NB: by default 16.04 does not have the syncthing-relaysrv package available
-  default = "ubuntu-17-10-x64"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "size" {
   description = "The digitalocean droplet size to use for this strelaysrv-node."
-  default = "512mb"
-  # 512mb = $5 with 1TB bandwidth per/month as at 2017-12
-  # 1gb   = $10 with 2TB bandwidth per/month as at 2017-12
+  default = "s-1vcpu-1gb"
+  # s-1vcpu-1gb = $5 and includes 1TB bandwidth per/month as at 2018-06
+  # s-1vcpu-2gb = $10 and includes 2TB bandwidth per/month as at 2018-06
 }
 
 variable "backups" {

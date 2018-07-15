@@ -12,9 +12,9 @@ this Terraform module as shown in the minimal example below:-
 
 ```hcl
 module "strelaysrv-node" {
-  source  = "ndejong/strelaysrv-node/digitalocean"
+  source  = "verbnetworks/strelaysrv-node/digitalocean"
   region = "sfo2"
-  hostname = "node0-sfo2-digitalocean"
+  hostname = "node0-sfo2-do"
   user = "<username>"
   user_sshkey = "<ssh-public-key>"
 }
@@ -132,7 +132,7 @@ The public digitalocean-droplet IPv6 address of this strelaysrv-node.
 
 
 ## Authors
-Module managed by [Nicholas de Jong](https://github.com/ndejong).
+Module managed by [Verb Networks](https://github.com/verbnetworks)
 
 ## License
 Apache 2 Licensed. See LICENSE for full details.
