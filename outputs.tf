@@ -15,14 +15,14 @@ output "hostname" {
   value = "${var.hostname}"
 }
 
-output "region" {
-  description = "The digitalocean region this strelaysrv-node droplet is within."
-  value = "${var.region}"
+output "loginuser" {
+  description = "The user login user created with passwordless sudo access on this strelaysrv-node."
+  value = "${var.loginuser}"
 }
 
-output "user" {
-  description = "The user login user created with passwordless sudo access on this strelaysrv-node."
-  value = "${var.user}"
+output "region" {
+  description = "The digitalocean region this strelaysrv-node droplet is within."
+  value = "${var.digitalocean_region}"
 }
 
 output "ipv4_address" {

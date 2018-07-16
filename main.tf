@@ -7,20 +7,19 @@
 # Apache License v2.0
 #  - http://www.apache.org/licenses/LICENSE-2.0
 
-# user_data
-# ============================================================================
-data "template_file" "cloud-config" {
-  template = "${file("${path.module}/etc/cloud-config.yaml")}"
-  vars {
-    user = "${var.user}"
-    user_sshkey = "${var.user_sshkey}"
-  }
+# establish the digitalocean provider
+provider "digitalocean" {
+  token = "${var.digitalocean_token}"
 }
 
-data "template_file" "cloud-config-bootstrap-sh" {
-  template = "${file("${path.module}/etc/cloud-config-bootstrap.sh")}"
+# user_data
+# ============================================================================
+data "template_file" "cloudinit-bootstrap-sh" {
+  template = "${file("${path.module}/data/cloudinit-bootstrap.sh")}"
   vars {
     hostname = "${var.hostname}"
+    loginuser = "${var.loginuser}"
+    loginuser_sshkey = "${var.loginuser_sshkey}"
     strelaysrv_extaddress = "${var.strelaysrv_extaddress}"
     strelaysrv_globalrate = "${var.strelaysrv_globalrate}"
     strelaysrv_messagetimeout = "${var.strelaysrv_messagetimeout}"
@@ -35,39 +34,32 @@ data "template_file" "cloud-config-bootstrap-sh" {
 }
 
 data "template_cloudinit_config" "node-userdata" {
-
-  # NB: some kind of cloud-init issue prevents gzip/base64 from working at digitalocean
+  # NB: a cloudinit issue prevents gzip/base64 from working at digitalocean, thus using the base64gzip technique
   gzip          = false
   base64_encode = false
 
   part {
-    content_type = "text/cloud-config"
-    content      = "${data.template_file.cloud-config.rendered}"
-  }
-
-  part {
     content_type = "text/x-shellscript"
-    content      = "${data.template_file.cloud-config-bootstrap-sh.rendered}"
-    filename     = "cloud-config-bootstrap.sh"
+    content      = "#!/bin/sh\necho -n '${base64gzip(data.template_file.cloudinit-bootstrap-sh.rendered)}' | base64 -d | gunzip | /bin/sh"
+    filename     = "cloudinit-bootstrap.sh"
   }
 }
 
 # digitalocean_droplet
 # ============================================================================
 resource "digitalocean_droplet" "droplet_node" {
-  image = "${var.image}"
   name = "${var.hostname}"
-  region = "${var.region}"
-  size = "${var.size}"
-  backups = "${var.backups}"
-  monitoring = "${var.monitoring}"
-  ipv6 = "${var.ipv6}"
-  private_networking = "${var.private_networking}"
+  image = "${var.digitalocean_image}"
+  region = "${var.digitalocean_region}"
+  size = "${var.digitalocean_size}"
+  backups = "${var.digitalocean_backups}"
+  monitoring = "${var.digitalocean_monitoring}"
+  ipv6 = "${var.digitalocean_ipv6}"
+  private_networking = "${var.digitalocean_private_networking}"
   user_data = "${data.template_cloudinit_config.node-userdata.rendered}"
 }
 
-# NB: there is a very strong temptation to use floating_ip addresses here, as at
-#     writing (2017-12-30) the Terraform exposed Digital Ocean interface does not
-#     provide the right functionality to correctly implement static IPv4
-#     addresses without clobbering (hence loosing) them.  If you require static
-#     IPv4 addresses you'll need to use the Digital Ocean webui manually.
+# NB: there is a very strong temptation to use floating_ip addresses here, as at writing (2017-12-30) the Terraform
+# exposed Digital Ocean interface does not quite provide the right functionality to correctly implement static IPv4
+# addresses without clobbering (hence loosing) them.  If you require static  IPv4 addresses you'll need to use the
+# Digital Ocean webui manually or come up with a tool to interface with the Digital Ocean API to manage it.
