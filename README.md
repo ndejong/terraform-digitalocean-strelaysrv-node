@@ -66,6 +66,12 @@ sudo iftop
    that works out of the box without digging around, considerable updates for Ubuntu 18.04 which are no longer 
    backward-compatible with earlier Ubuntu versions.
 
+
+## History
+This module was originally published via `github.com/ndejong/terraform-digitalocean-strelaysrv-node` and was 
+subsequently moved which required it to be removed and re-added within the Terraform Module repository.
+
+
 ****
 
 ## Input Variables - Required
