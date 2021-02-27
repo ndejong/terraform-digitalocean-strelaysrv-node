@@ -25,13 +25,13 @@ module "terraform-digitalocean-strelaysrv-node" {
    
   # add an awesome message to our Syncthing relay server 
   # ===
-  strelaysrv_providedby = "Terraform: strelaysrv-node/digitalocean"
+  strelaysrv_providedby = "Terraform: strelaysrv-node"
 }
 ```
 
-By default the `-pools` switch is enabled with `https://relays.syncthing.net/endpoint` hence causing the node to 
+By default the `-pools` switch is enabled with `https://relays.syncthing.net/endpoint` which causes the node to 
 join the public pool.  In the same way as with the Syncthing Relay Server this is easily overridden by setting 
-`strelaysrv_pools` to a blank value which will cause it to act privately.
+`strelaysrv_pools` to a blank value which will cause the relay to act privately.
 
 ## Droplet Startup
 The system start and install cycles can take a few minutes to complete, once the `terraform apply` is complete you 
