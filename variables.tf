@@ -16,38 +16,30 @@ variable "hostname" {
 }
 
 variable "digitalocean_region" {
-  description = "The DigitalOcean region-slug to start this strelaysrv-node within (nyc1, sgp1, lon1, nyc3, ams3, fra1, tor1, sfo2, blr1)"
+  description = "The DigitalOcean region-slug to start this strelaysrv-node within."
 }
-
-variable "digitalocean_token" {
-  description = "Your DigitalOcean API token used to issue cURL API calls directly to DigitalOcean to create the required image"
-}
-
 
 # required variables - with defaults available
 # ============================================================================
 
 variable "loginuser" {
-  description = "The user login user to create with passwordless sudo access for this strelaysrv-node, if empty no account will be created. NB: the root account is always disabled."
+  description = "The user login user to create with passwordless sudo access for this strelaysrv-node. NB: the root account is always disabled."
   default = ""
 }
 
 variable "loginuser_sshkey" {
-  description = "The sshkey to inject into the loginuser account - NB: password based ssh auth is always disabled."
+  description = "The sshkey to inject into the loginuser account; NB: password ssh-auth is always disabled."
   default = ""
 }
 
 variable "digitalocean_image" {
   description = "The digitalocean image to use as the base for this strelaysrv-node."
-  default = "ubuntu-18-04-x64"
+  default = "ubuntu-20-04-x64"
 }
 
 variable "digitalocean_size" {
   description = "The digitalocean droplet size to use for this strelaysrv-node."
-  default = "s-1vcpu-1gb"
-  # s-1vcpu-1gb = $5 USD per/month and includes 1000GB pooled outbound data transfer allowance as at 2018-06
-  # s-1vcpu-2gb = $10 USD per/moath and includes 2000GB pooled outbound data transfer allowance as at 2018-06
-  # Reference: https://www.digitalocean.com/docs/release-notes/2018/droplet-bandwidth-billing/
+  default = "s-2vcpu-2gb"
 }
 
 variable "digitalocean_backups" {
@@ -62,7 +54,7 @@ variable "digitalocean_monitoring" {
 
 variable "digitalocean_ipv6" {
   description = "Enable/disable getting a public IPv6 on this digitalocean-droplet."
-  # NB: worth enabling since some transit routes are lower latency via IPv6 than IPv4, however not many IPv6 nodes out there...
+  # NB: worth enabling since some transit routes are lower latency via IPv6 than IPv4
   default = true
 }
 
@@ -71,6 +63,11 @@ variable "digitalocean_private_networking" {
   default = false
 }
 
+variable "digitalocean_tags" {
+  description = "List of tags to apply to this strelaysrv-node DigitalOcean Droplet."
+  type = list(string)
+  default = []
+}
 
 # optional variables (all strelaysrv related)
 # ============================================================================

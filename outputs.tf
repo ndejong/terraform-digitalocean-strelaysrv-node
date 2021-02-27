@@ -12,25 +12,25 @@
 
 output "hostname" {
   description = "The hostname given to this strelaysrv-node."
-  value = "${var.hostname}"
+  value = var.hostname
 }
 
 output "loginuser" {
   description = "The user login user created with passwordless sudo access on this strelaysrv-node."
-  value = "${var.loginuser}"
+  value = var.loginuser
 }
 
 output "region" {
   description = "The digitalocean region this strelaysrv-node droplet is within."
-  value = "${var.digitalocean_region}"
+  value = module.droplet.region
 }
 
 output "ipv4_address" {
   description = "The public IPv4 address of this strelaysrv-node droplet."
-  value = "${digitalocean_droplet.droplet_node.ipv4_address}"
+  value = module.droplet.ipv4_address
 }
 
 output "ipv6_address" {
   description = "The public IPv6 address of this strelaysrv-node droplet."
-  value = "${digitalocean_droplet.droplet_node.ipv6_address}"
+  value = module.droplet.ipv6_address
 }
