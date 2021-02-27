@@ -27,8 +27,7 @@ data "template_file" "strelaysrv-bootstrap-sh" {
 }
 
 module "droplet" {
-  #source  = "verbnetworks/droplet/digitalocean"
-  source  = "../terraform-digitalocean-droplet"
+  source  = "verbnetworks/droplet/digitalocean"
   hostname = var.hostname
   digitalocean_region = var.digitalocean_region
   digitalocean_backups = var.digitalocean_backups
