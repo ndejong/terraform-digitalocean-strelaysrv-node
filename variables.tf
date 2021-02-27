@@ -124,7 +124,7 @@ variable "strelaysrv_protocol" {
 
 variable "strelaysrv_providedby" {
   description = "An description about who provides the relay."
-  default = ""
+  default = "Terraform: strelaysrv-node"
 }
 
 variable "strelaysrv_statussrv" {
