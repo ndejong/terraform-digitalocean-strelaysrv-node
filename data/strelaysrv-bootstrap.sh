@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2018 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
+# Copyright (c) 2021 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
 #  - All rights reserved.
 #
 # Apache License v2.0
@@ -25,9 +25,17 @@ apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get --yes -o DPkg::options::="--force-confold" upgrade
 DEBIAN_FRONTEND=noninteractive apt-get --yes -o DPkg::options::="--force-confold" install htop iftop tree traceroute nmap tcpdump netcat figlet jq vim net-tools
 
-# install strelaysrv and kill right away if it started via install
-DEBIAN_FRONTEND=noninteractive apt-get --yes -o DPkg::options::="--force-confold" install syncthing-relaysrv
-systemctl stop syncthing-relaysrv
+# determine the required release tag
+if [ "${strelaysrv_release}" = "latest" ]; then
+    strelaysrv_release=$(curl -s 'https://api.github.com/repos/syncthing/relaysrv/releases/latest' | jq -r .tag_name)
+fi
+
+# install the strelaysrv package and make sure it is not running post install
+strelaysrv_package_url=$(curl -s 'https://api.github.com/repos/syncthing/relaysrv/releases' | jq -r .[].assets[].browser_download_url | grep "$strelaysrv_release" | grep 'amd64.deb')
+wget -o /dev/null -O /tmp/strelaysrv.deb "$strelaysrv_package_url"
+dpkg --install /tmp/strelaysrv.deb
+sleep 1
+systemctl stop strelaysrv
 sleep 3
 killall -q strelaysrv
 
@@ -69,19 +77,13 @@ if [ $(echo -n "${strelaysrv_extaddress}" | wc -c) -gt 0 ]; then
     fi
 fi
 
-# create a required path for keys
-mkdir -p /etc/strelaysrv
-chown -R syncthing:syncthing /etc/strelaysrv
-
-# replace the exec line in /lib/systemd/system/syncthing-relaysrv.service
-exec_start='/usr/bin/strelaysrv -keys="/etc/strelaysrv" -nat="false" -listen=":22067" -ext-address="${strelaysrv_extaddress}" -global-rate="${strelaysrv_globalrate}" -message-timeout="${strelaysrv_messagetimeout}" -network-timeout="${strelaysrv_networktimeout}" -per-session-rate="${strelaysrv_persessionrate}" -ping-interval="${strelaysrv_pinginterval}" -pools="${strelaysrv_pools}" -protocol="${strelaysrv_protocol}" -provided-by="${strelaysrv_providedby}" -status-srv="${strelaysrv_statussrv}"'
+# replace the exec line in /lib/systemd/system/strelaysrv.service
+exec_start='/usr/bin/strelaysrv -nat="false" -listen=":22067" -ext-address="${strelaysrv_extaddress}" -global-rate="${strelaysrv_globalrate}" -message-timeout="${strelaysrv_messagetimeout}" -network-timeout="${strelaysrv_networktimeout}" -per-session-rate="${strelaysrv_persessionrate}" -ping-interval="${strelaysrv_pinginterval}" -pools="${strelaysrv_pools}" -protocol="${strelaysrv_protocol}" -provided-by="${strelaysrv_providedby}" -status-srv="${strelaysrv_statussrv}"'
 exec_start_escaped=$(printf '%s\n' "$exec_start" | sed -e 's/[\/&]/\\&/g')
-sed -i -e "/.*ExecStart=/s/^.*$/ExecStart=$exec_start_escaped/" /lib/systemd/system/syncthing-relaysrv.service
-rm -f /etc/default/syncthing-relaysrv
-touch /etc/default/syncthing-relaysrv
+sed -i -e "/.*ExecStart=/s/^.*$/ExecStart=$exec_start_escaped/" /lib/systemd/system/strelaysrv.service
 
 systemctl daemon-reload
-systemctl restart syncthing-relaysrv
+systemctl restart strelaysrv
 
 # hostname in motd
 echo -n '${hostname}' | tail -c 8 | figlet > /etc/motd
@@ -94,7 +96,7 @@ cat > /etc/update-motd.d/99-strelaysrv <<-EOF
 	echo -n 'iptables: '
 	iptables -t nat -L | grep -A2 PREROUTING | tail -n1
 	echo -n 'strelaysrv: '
-	/bin/journalctl -xe | /bin/grep 'relay://' | /usr/bin/tail -n1 | /usr/bin/tr ' ' '\n' | /bin/grep 'relay://'
+	journalctl -xe | grep 'relay://' | tail -n1 | tr ' ' '\n' | grep 'relay://' | cut -d'&' -f1
 	echo -n 'connections: '
 	echo \$(netstat -anp | grep strelaysrv | grep ESTABLISHED | wc -l)
 	echo 'relays: https://relays.syncthing.net/'

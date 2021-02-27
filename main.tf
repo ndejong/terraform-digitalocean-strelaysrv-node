@@ -1,7 +1,7 @@
 # terraform-digitalocean-strelaysrv-node
 # ============================================================================
 
-# Copyright (c) 2018 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
+# Copyright (c) 2021 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
 #  - All rights reserved.
 #
 # Apache License v2.0
@@ -23,6 +23,7 @@ data "template_file" "strelaysrv-bootstrap-sh" {
     strelaysrv_protocol = var.strelaysrv_protocol
     strelaysrv_providedby = substr(var.strelaysrv_providedby, 0, 30)
     strelaysrv_statussrv = var.strelaysrv_statussrv
+    strelaysrv_release = var.strelaysrv_release
   }
 }
 

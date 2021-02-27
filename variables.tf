@@ -1,7 +1,7 @@
 # terraform-digitalocean-strelaysrv-node
 # ============================================================================
 
-# Copyright (c) 2018 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
+# Copyright (c) 2021 Verb Networks Pty Ltd <contact [at] verbnetworks.com>
 #  - All rights reserved.
 #
 # Apache License v2.0
@@ -73,9 +73,14 @@ variable "digitalocean_tags" {
 # ============================================================================
 
 # NB:-
-# "strelaysrv_keys" - is hardcoded to "/etc/strelaysrv" to provide a predictable path
+# "strelaysrv_keys" - follows the standard strelaysrv default '.' cwd path
 # "strelaysrv_listen" - is hardcoded to ":22067" to provide a predictable iptables nat forward for ${strelaysrv_extaddress}
-# "*-nat" options - not implemented since they are not required in an envrionment where the node directly has a public address
+# "-nat-lease" "-nat-renewal" and "-nat-timeout" options are not available
+
+variable "strelaysrv_release" {
+  description = "The release tag to install from https://github.com/syncthing/relaysrv/releases."
+  default = "latest"
+}
 
 variable "strelaysrv_extaddress" {
   description = "The address (and port) to advertise for this node.  NB: other clients are more likely to achieve a connection on TCP443 hence we perform some internal NAT magic to forward TCP443 to TCP22067."

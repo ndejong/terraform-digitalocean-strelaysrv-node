@@ -7,3 +7,5 @@ _dev/
 
 # Module directory
 .terraform/
+
+.terraform.lock.hcl
