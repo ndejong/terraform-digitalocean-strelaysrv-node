@@ -22,8 +22,8 @@ service ssh restart
 
 # install packages that are helpful here
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get --yes -o DPkg::options::="--force-confold" upgrade
-DEBIAN_FRONTEND=noninteractive apt-get --yes -o DPkg::options::="--force-confold" install htop iftop tree traceroute nmap tcpdump netcat figlet jq vim net-tools
+DEBIAN_FRONTEND=noninteractive apt-get --assume-yes -o DPkg::options::="--force-confold" upgrade
+DEBIAN_FRONTEND=noninteractive apt-get --assume-yes -o DPkg::options::="--force-confold" install iptables-persistent net-tools jq figlet traceroute tcpdump netcat nmap iftop htop vim tree
 
 # determine the required release tag
 if [ "${strelaysrv_release}" = "latest" ]; then
@@ -56,24 +56,18 @@ if [ $(echo -n "${strelaysrv_extaddress}" | wc -c) -gt 0 ]; then
         mkdir -p /etc/iptables
 
         # iptables for tcp4 port forwarding to tcp4-22067
-        cat > /etc/iptables/strelaysrv-iptables.rules <<-EOF
+        cat > /etc/iptables/rules.v4 <<-EOF
 					# strelaysrv-iptables.rules
 					*nat
-					:PREROUTING ACCEPT [18:1008]
-					:INPUT ACCEPT [18:1008]
+					:PREROUTING ACCEPT [0:0]
+					:INPUT ACCEPT [0:0]
 					:OUTPUT ACCEPT [0:0]
 					:POSTROUTING ACCEPT [0:0]
 					-A PREROUTING -i eth0 -p tcp -m tcp --dport $strelaysrv_extaddress_port -j REDIRECT --to-ports 22067
 					COMMIT
 				EOF
 
-        cat > /etc/network/if-up.d/iptables <<-EOF
-					#!/bin/bash
-					iptables-restore < /etc/iptables/*.rules
-				EOF
-
-        chmod 755 /etc/network/if-up.d/iptables
-        /etc/network/if-up.d/iptables
+				iptables-restore < /etc/iptables/rules.v4
     fi
 fi
 
@@ -85,12 +79,15 @@ sed -i -e "/.*ExecStart=/s/^.*$/ExecStart=$exec_start_escaped/" /lib/systemd/sys
 systemctl daemon-reload
 systemctl restart strelaysrv
 
-# hostname in motd
-echo -n '${hostname}' | tail -c 8 | figlet > /etc/motd
-echo '' >> /etc/motd
+# hostname-figlet
+cat > /etc/update-motd.d/99-1-hostname-figlet <<-EOF
+	#!/bin/sh
+	hostname | tail -c 8 | figlet
+EOF
+chmod 755 /etc/update-motd.d/99-1-hostname-figlet
 
-# strelaysrv info
-cat > /etc/update-motd.d/99-strelaysrv <<-EOF
+# strelaysrv
+cat > /etc/update-motd.d/99-2-strelaysrv <<-EOF
 	#!/bin/sh
 	echo ''
 	echo -n 'iptables: '
@@ -100,8 +97,9 @@ cat > /etc/update-motd.d/99-strelaysrv <<-EOF
 	echo -n 'connections: '
 	echo \$(netstat -anp | grep strelaysrv | grep ESTABLISHED | wc -l)
 	echo 'relays: https://relays.syncthing.net/'
-	echo ''
 EOF
-chmod 755 /etc/update-motd.d/99-strelaysrv
+chmod 755 /etc/update-motd.d/99-2-strelaysrv
+
+rm -f /etc/motd
 
 exit 0
