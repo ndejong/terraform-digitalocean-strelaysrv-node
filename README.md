@@ -10,22 +10,18 @@ Establishing a Syncthing Relay Server node on Digital Ocean can be made incredib
 shown in the minimal example below:-
 
 ```hcl
-module "terraform-digitalocean-strelaysrv-node" {
+module "relay01-digitalocean-sf03" {
   source  = "verbnetworks/strelaysrv-node/digitalocean"
 
   # required variables
   # ===
   hostname = "relay01"
-  digitalocean_region = "sfo2"
+  digitalocean_region = "sfo3"
 
-  # optional variables, however impossible to access console without setting `loginuser` and `loginuser_sshkey` 
+  # optional, however impossible to access without setting the `loginuser` and `loginuser_sshkey` variables 
   # ===
   loginuser = "myusername"
   loginuser_sshkey = trimspace(file("~/.ssh/authorized_keys"))
-   
-  # add an awesome message to our Syncthing relay server 
-  # ===
-  strelaysrv_providedby = "Terraform: strelaysrv-node"
 }
 ```
 
